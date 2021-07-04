@@ -1,4 +1,4 @@
-function SelCh = LocalSearch(SelCh, cusnum, a, b, L, s, dist)
+function SelCh = neighborhoodSearch(SelCh, cusnum, a, b, L, s, dist)
     D = 15;
     to_remove = 5;
     [row, N] = size(SelCh);

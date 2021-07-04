@@ -1,68 +1,98 @@
 clear, clc, close all;
 
 %% input data
-test = importdata('test.xlsx');
-E = test(1,5);
-L = test(1,6);
-vertexs = test(:, 2:3);
-customer = vertexs(2:end, :);
-cusnum = size(customer, 1);
-v_num = 1; % number of vehicle 当车辆数目大于1时，需要修改decode
+% test_date = importdata('test.xlsx');
+test_date = importdata('c101.txt');
+% tw1 means the earliest start time, tw2 means the latest start time
+depot_time_window1 = test_date(1,5);
+depot_time_window2 = test_date(1,6);
+time_window1 = test_date(2:end, 5); % tw, start time
+time_window2 = test_date(2:end, 6); % tw, end time
+service_time = test_date(2:end, 7); % service time 
+vertexs = test_date(:, 2:3);
+customer_location = vertexs(2:end, :);
+customer_number = size(customer_location, 1);
 
-a = test(2:end, 5); % tw, start time
-b = test(2:end, 6); % tw, end time
-s = test(2:end, 7); % service time 
+robot_number = 4; % number of vehicles
+
 % dist matrix
-h = pdist(vertexs); 
-dist = squareform(h);
+distance_pair = pdist(vertexs); % pairwise distance
+distance_matrix = squareform(distance_pair); 
 
 %% GA parameters 
-POP = 100; 
-MAXGEN = 100; 
-Pc = 0.9; 
-Pm = 0.05; 
-GGAP = 0.9; 
-N = cusnum + v_num - 1;
-
+population = 100; 
+generation = 1;
+maximum_generation = 50; 
+probability_crossover = 0.9; 
+probability_mutation = 0.05; 
+rate_gap = 0.9; 
+length_chrom = customer_number + robot_number - 1;
 
 %% initialize population 
-init_vc = init(cusnum, a);
+init_chrom = init(customer_number, time_window1);
 
-Chrom = InitPopCW(POP, N, cusnum, init_vc);
+chroms = createInitPopulation(population, length_chrom, customer_number, init_chrom);
 
-[VC,NV,TD,violate_num,violate_cus] = decode(Chrom(1,:),cusnum,a,b,L,s,dist);
+% display some values of the initial random population
+[VC,NV,TD,violate_num,violate_cus] = decode(chroms(1,:),customer_number,time_window1,time_window2,depot_time_window2,service_time,distance_matrix);
+disp('The initial population:');
+disp(['Number of Robots: ', num2str(NV), ', Total Distance: ', num2str(TD), ', Number of violated Path: ', num2str(violate_num), ', Number of Violated Customer: ', num2str(violate_cus)]);
+fprintf('\n');
+ObjV = calObj(chroms,customer_number,time_window1,time_window2,depot_time_window2,service_time,distance_matrix);
+pre_objective_value=min(ObjV);
 
-ObjV = calObj(Chrom,cusnum,a,b,L,s,dist);
-minObjV=min(ObjV)
-
+% Display the change of the objective function value
+figure;
+hold on;
+box on;
+xlim([0, maximum_generation]);
+title('Optimization Process');
+xlabel('Generation');
+ylabel('The Optimal Value');
 %% the loop
-gen = 0;
-while gen <= MAXGEN
-    % 计算适应度
-    ObjV = calObj(Chrom,cusnum,a,b,L,s,dist);
+while generation <= maximum_generation
+    % calculate the fitness value
+    ObjV = calObj(chroms,customer_number,time_window1,time_window2,depot_time_window2,service_time,distance_matrix);
+    % draw the line
+    line([generation - 1, generation], [pre_objective_value, min(ObjV)]); pause(0.0001);
+    pre_objective_value = min(ObjV);
     FitnV = Fitness(ObjV);
-    % 选择
-    SelCh = Select(Chrom,FitnV,GGAP);
+    % select
+    SelCh = Select(chroms,FitnV,rate_gap);
     % crossover
-    SelCh = Recombin(SelCh,Pc);
+    SelCh = Recombin(SelCh,probability_crossover);
     % mutation
-    SelCh = Mutate(SelCh,Pm);
-    % 局部搜索
-    SelCh = LocalSearch(SelCh, cusnum, a, b, L, s, dist);
-    % 重新插入
-    Chrom = Reins(Chrom,SelCh,ObjV);
-    % 删除重复的个体
-    Chrom = DealRepeat(Chrom);
-    ObjV = calObj(Chrom,cusnum,a,b,L,s,dist);
+    SelCh = Mutate(SelCh,probability_mutation);
+    
+    
+    % local search
+    SelCh = neighborhoodSearch(SelCh, customer_number, time_window1, time_window2, depot_time_window2, service_time, distance_matrix);
+    % 
+    chroms = Reins(chroms,SelCh,ObjV);
+    % Delete duplicate chromsomes 
+    chroms = DealRepeat(chroms);
+    ObjV = calObj(chroms,customer_number,time_window1,time_window2,depot_time_window2,service_time,distance_matrix);
     [minObjV,minInd]=min(ObjV);
-    minObjV
-    [bestVC,bestNV,bestTD,best_vionum,best_viocus]=decode(Chrom(minInd(1),:),cusnum,a,b,L,s,dist);
-    gen = gen + 1;
+    disp(['Generation:' num2str(generation)]);
+    [bestVC,bestNV,bestTD,best_vionum,best_viocus]=decode(chroms(minInd(1),:),customer_number,time_window1,time_window2,depot_time_window2,service_time,distance_matrix);
+    disp(['Number of Robots: ', num2str(bestNV), ', Total Distance: ', num2str(bestTD), ', Number of violated Path: ', num2str(best_vionum), ', Number of Violated Customer: ', num2str(best_viocus)]);
+    fprintf('\n');
+    generation = generation + 1;
 end
-ObjV = calObj(Chrom,cusnum,a,b,L,s,dist);
+ObjV = calObj(chroms,customer_number,time_window1,time_window2,depot_time_window2,service_time,distance_matrix);
 [minObjV,minInd]=min(ObjV);
-minObjV
 
+disp('Optimal Result:')
+bestChrom=chroms(minInd(1),:);
+[bestVC,bestNV,bestTD,best_vionum,best_viocus]=decode(bestChrom, customer_number, time_window1, time_window2, depot_time_window2, service_time, distance_matrix);
+disp(['Number of Robots: ', num2str(bestNV), ', Total Distance: ', num2str(bestTD), ', Number of violated Path: ', num2str(best_vionum), ', Number of Violated Customer: ', num2str(best_viocus)]);
+
+flag = Judge(bestVC, time_window1, time_window2, depot_time_window2, service_time, distance_matrix);
+
+% check the missing element in the final result
+missing_element = judgeFullElement(bestVC, customer_number);
+
+drawMap(bestVC, vertexs);
 
 
 

@@ -3,6 +3,6 @@ function ObjV = calObj(Chrom,cusnum,a,b,L,s,dist)
     ObjV=zeros(n,1);                        
     for i=1:n
         [VC,NV,TD,violate_num,vioFlate_cus]=decode(Chrom(i,:),cusnum,a,b,L,s,dist);
-        ObjV(i) = travel_distance(VC,dist);
+        ObjV(i) = costFuction(VC,a,b,s,L,dist);
     end
 end
