@@ -22,14 +22,14 @@ distance_matrix = squareform(distance_pair);
 %% GA parameters 
 population = 100; 
 generation = 1;
-maximum_generation = 50; 
+maximum_generation = 3; 
 probability_crossover = 0.9; 
 probability_mutation = 0.05; 
 rate_gap = 0.9; 
 length_chrom = customer_number + robot_number - 1;
 
-%% initialize population 
-init_chrom = init(customer_number, time_window1);
+%% initialize population
+init_chrom = createInitChrom(customer_number, time_window1);
 
 chroms = createInitPopulation(population, length_chrom, customer_number, init_chrom);
 

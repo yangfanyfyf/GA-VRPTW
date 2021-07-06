@@ -4,7 +4,7 @@ function [ReIfvc, RTD] = ReInserting(removed,rfvc,L,a,b,s,dist)
        removed(removed == fv) = [];
        [rfvc, iTD] = insert(fv, fviv, fvip, fvC, rfvc, dist);
     end
-    [rfvc, ~] = deal_vehicles_customer(rfvc);
+    [rfvc, ~] = deleteEmptyRoutes(rfvc);
     
     ReIfvc = rfvc;
     

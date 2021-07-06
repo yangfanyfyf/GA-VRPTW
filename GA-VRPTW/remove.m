@@ -33,5 +33,5 @@ function [removed, rfvc] = remove(cusnum, to_remove, D, dist, final_vehicles_cus
         rfvc{i} = route;
     end
     
-    [rfvc, ~] = deal_vehicles_customer(rfvc);
+    [rfvc, ~] = deleteEmptyRoutes(rfvc);
 end
