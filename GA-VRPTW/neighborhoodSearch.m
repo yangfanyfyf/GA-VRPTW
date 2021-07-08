@@ -12,7 +12,7 @@ function SelCh = neighborhoodSearch(SelCh, cusnum, a, b, L, s, dist)
         
         RCF = costFuction(ReIfvc,a,b,s,L,dist);
         if RCF < CF
-            chrom = change(ReIfvc, N, cusnum);
+            chrom = route2Chrom(ReIfvc, N, cusnum);
             if length(chrom) ~= N
                 record = ReIfvc;
                 break;

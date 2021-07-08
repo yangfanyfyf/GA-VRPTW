@@ -1,8 +1,11 @@
-function ObjV = calObj(Chrom,cusnum,a,b,L,s,dist)
-    n = size(Chrom,1);                         
-    ObjV=zeros(n,1);                        
+% calculate the value of objective function
+function ObjV = calObj(chroms,cusnum,a,b,L,s,dist)
+    n = size(chroms,1); % number of all vehicle                       
+    ObjV = zeros(n,1);                        
     for i=1:n
-        [VC,NV,TD,violate_num,vioFlate_cus]=decode(Chrom(i,:),cusnum,a,b,L,s,dist);
+        % VC, customers of every vehicle
+        [VC, ~, ~, ~, ~]=decode(chroms(i,:),cusnum,a,b,L,s,dist);
+        % distance + weight * late time
         ObjV(i) = costFuction(VC,a,b,s,L,dist);
     end
 end

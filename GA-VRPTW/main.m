@@ -1,8 +1,8 @@
 clear, clc, close all;
 
 %% input data
-% test_date = importdata('test.xlsx');
-test_date = importdata('c101.txt');
+ test_date = importdata('test.xlsx');
+%test_date = importdata('c101.txt');
 % tw1 means the earliest start time, tw2 means the latest start time
 depot_time_window1 = test_date(1,5);
 depot_time_window2 = test_date(1,6);
@@ -13,16 +13,16 @@ vertexs = test_date(:, 2:3);
 customer_location = vertexs(2:end, :);
 customer_number = size(customer_location, 1);
 
-robot_number = 4; % number of vehicles
+robot_number = 3; % number of vehicles
 
 % dist matrix
 distance_pair = pdist(vertexs); % pairwise distance
 distance_matrix = squareform(distance_pair); 
 
 %% GA parameters 
-population = 100; 
+population = 10; 
 generation = 1;
-maximum_generation = 3; 
+maximum_generation = 1; 
 probability_crossover = 0.9; 
 probability_mutation = 0.05; 
 rate_gap = 0.9; 
@@ -38,7 +38,9 @@ chroms = createInitPopulation(population, length_chrom, customer_number, init_ch
 disp('The initial population:');
 disp(['Number of Robots: ', num2str(NV), ', Total Distance: ', num2str(TD), ', Number of violated Path: ', num2str(violate_num), ', Number of Violated Customer: ', num2str(violate_cus)]);
 fprintf('\n');
+% calsulate the value of objective function 
 ObjV = calObj(chroms,customer_number,time_window1,time_window2,depot_time_window2,service_time,distance_matrix);
+% the minimal value
 pre_objective_value=min(ObjV);
 
 % Display the change of the objective function value
@@ -96,4 +98,4 @@ drawMap(bestVC, vertexs);
 
 
 
-
+close all

@@ -5,7 +5,7 @@
 % L -------------- latest arrival time to depot
 
 % output:
-% VC ------------- customers of every robots
+% VC ------------- customers of every vehicle
 % NV ------------- number of vehicles/ robots
 % TD ------------- total distance
 
@@ -46,8 +46,11 @@ function [VC, NV, TD, violate_num, violate_cus] = decode(chrom, customer_number,
   for j=1:NV
     route = cell(1,1);                                
     route{1} = VC{j}; % pick up one route
-    flag=Judge(route,a,b,L,service_time,dist);
-    if flag==0
+    % check the violated 
+    flag = Judge(route,a,b,L,service_time,dist);
+    if flag == 1
+        % if one customer in this route is violated, then all customer in
+        % this route is violated
         violate_cus = violate_cus + length(route{1});   
         violate_num = violate_num + 1;                  
     end

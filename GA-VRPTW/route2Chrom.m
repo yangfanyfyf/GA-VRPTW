@@ -1,4 +1,5 @@
-function chrom = change(VC, N, cusnum)
+% convert the route(cell) to a single chromosome
+function chrom = route2Chrom(VC, N, cusnum)
   % N是考虑到depot的长度，cuscum只有顾客个数
   NV = size(VC, 1); % number of routes
   chrom = [];
