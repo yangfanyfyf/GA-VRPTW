@@ -63,5 +63,18 @@ Just run main.m, test data can be changed here.
 
     Calculate total late time
 
-13. Select.m
+13. **Select.m** and **Sus.m**
 
+    Use stochastic universal sampling
+
+14. **Recombin.m** and **Crossover.m**
+
+    Use order crossover
+
+    1. Choose 2 numbers randomly, these 2 numbers are used as the range
+    2. And the genes in this range to the beginning of other parent chromosome
+    3. Delete the second same genes in the chromosome
+
+15. **Mutate.m**
+
+    Reverse the order of genes in a range

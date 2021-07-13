@@ -1,8 +1,8 @@
 clear, clc, close all;
 
 %% input data
- test_date = importdata('test.xlsx');
-%test_date = importdata('c101.txt');
+% test_date = importdata('test.xlsx');
+test_date = importdata('c101.txt');
 % tw1 means the earliest start time, tw2 means the latest start time
 depot_time_window1 = test_date(1,5);
 depot_time_window2 = test_date(1,6);
@@ -20,9 +20,9 @@ distance_pair = pdist(vertexs); % pairwise distance
 distance_matrix = squareform(distance_pair); 
 
 %% GA parameters 
-population = 10; 
+population = 100; 
 generation = 1;
-maximum_generation = 1; 
+maximum_generation = 50; 
 probability_crossover = 0.9; 
 probability_mutation = 0.05; 
 rate_gap = 0.9; 
@@ -98,4 +98,4 @@ drawMap(bestVC, vertexs);
 
 
 
-close all
+% close all
