@@ -3,7 +3,9 @@ function SelCh = neighborhoodSearch(SelCh, cusnum, a, b, L, s, dist)
     to_remove = 5;
     [row, N] = size(SelCh);
     for i = 1: row
+        % 解码？
         [VC, NV, TD, violate_num, violate_cus] = decode(SelCh(i, :), cusnum, a, b, L, s, dist);
+        % 
         CF = costFuction(VC,a,b,s,L,dist);
         % remove函数的作用是什么？？
         [removed, rfvc] = remove(cusnum, to_remove, D, dist, VC);

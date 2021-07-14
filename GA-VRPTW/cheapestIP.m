@@ -7,28 +7,30 @@ for i=1:NV
     LB= part_length(route,dist);       
     
     for j=1:len+1
+        % first point, after the depot
         if j==1
             temp_r=[rv route];
-            LA= part_length(temp_r,dist);       
-            delta=LA-LB;
-            [bs,back]= begin_s(temp_r,a,s,dist );
-            violate_TW=(bs'<=b(temp_r));
-            vTW=find(violate_TW==0,1,'first');
-            if isempty(vTW)&&(back<=L)
+            
+            LA = part_length(temp_r,dist);% length of route after insert     
+            delta=LA-LB; % increased distance
+            [bs,back] = begin_s(temp_r,a,s,dist ); % calculate the start time
+            violate_TW = (bs'<=b(temp_r));
+            vTW=find(violate_TW==0,1,'first'); % find the violated customer
+            if isempty(vTW) && (back<=L) % if no violation
                 outcome=[outcome;i j delta];
             end
-        elseif j==len+1
+        elseif j==len+1 % last point, before the depot
             temp_r=[route rv];
             LA= part_length(temp_r,dist);
             delta=LA-LB;
             [bs,back]= begin_s( temp_r,a,s,dist );
             violate_TW=(bs'<=b(temp_r));          
-            vTW=find(violate_TW==0,1,'first'); 
-            % check the time window constrains
+            vTW=find(violate_TW==0,1,'first');
             if isempty(vTW)&&(back<=L)
                 outcome=[outcome;i j delta];
             end
         else
+            % add the point between the customers
             temp_r=[route(1:j-1) rv route(j:end)];
             LA= part_length(temp_r,dist);       
             delta=LA-LB;
@@ -41,7 +43,8 @@ for i=1:NV
         end
     end
 end
-
+% find the best insert point
+% sort the insert with the increased distance
 if ~isempty(outcome)
     addC=outcome(:,3);
     [saC,sindex]=sort(addC);

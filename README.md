@@ -1,15 +1,30 @@
 # GA-VRPTW
- A Genetic Algorithm for Vehicle Routing Problem with Time Windows
+A Genetic Algorithm for Vehicle Routing Problem with Time Windows
 
-Just run main.m, test data can be changed here.
+## Main Procedures
+
+```
+1. create a random initial chromosome and the initial generation
+2. while(maximal iterations not reached)
+	a. calculate the fitness value
+	b. select parent chromosome
+	c. crossover
+	d. mutate
+	e. neighborhood search
+3. display
+```
+
+## Explanation of Functions
+
+Just run **main.m**, test data can be changed here.
 
 1. **createInitChrom.m**
 
    To generate the first chromosome, random but consider the time window.
-   
+
 2. **route2Chrom.m**
 
-   猜测是将每个机器人的配送方案，组合为一个完整的chromosome，但是加入了序列号之外的点，不知道后面如何解决？
+   Convert routes to one chromosome
 
 3. **createInitPopulation.m**
 
@@ -22,11 +37,11 @@ Just run main.m, test data can be changed here.
    Seperate a chromosome to several routes
 
    Delete empty routes
-   
+
    Calculate the violated customer and the violated vehicle
-   
+
    Violated customer means, the time window constraints cannot be satisfied.
-   
+
 5. **deleteEmptyRoutes.m**
 
    Delete empty routes
@@ -77,4 +92,16 @@ Just run main.m, test data can be changed here.
 
 15. **Mutate.m**
 
-    Reverse the order of genes in a range
+    swap 2 genes
+
+16. **neighborhoodSearch.m**
+
+    Do a large neighborhood search, it has two main parts:
+
+    + **Remove.m**
+
+      Remove some customers according to the relatedness value(Relatedness.m, values have relations with distance and route)
+
+    + **ReInserting.m**
+
+      Reinsert the customers back to the route, it will check every possible position and choose the position with least increased distance.

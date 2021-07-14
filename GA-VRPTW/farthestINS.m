@@ -2,7 +2,7 @@ function [fv, fviv, fvip, fvC] = farthestINS(removed,rfvc,L,a,b,s,dist)
     nr = length(removed);
     outcome = zeros(nr, 3);
     for i = 1 : nr
-        % 去除载荷
+        % return the best [idx of veh, insert point, increased distance]
         [civ, cip, C] = cheapestIP(removed(i), rfvc, L, a, b, s, dist);
         outcome(i, 1) = civ;
         outcome(i, 2) = cip;

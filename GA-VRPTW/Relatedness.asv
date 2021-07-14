@@ -1,9 +1,9 @@
 % 
 function relatedness_ij = Relatedness(i, j, dist, vehicles_customer)
-    % n = size(dist, 1) - 1; % number of customer
+    n = size(dist, 1) - 1; % number of customer
     NV = size(vehicles_customer, 1); % number of vehicles
     d = dist(i + 1, j + 1);
-    [md, ~] = max((dist(i + 1, 2 : end)));
+    [md, mindex] = max((dist(i + 1, 2 : end)));
     c = d / md; % distannce / max_distance
     V = 1; % not in the same route
     for k = 1 : NV
@@ -18,4 +18,5 @@ function relatedness_ij = Relatedness(i, j, dist, vehicles_customer)
     % relatedness is relative to the distance between 2 points and whether
     % they are on the same route
     relatedness_ij = 1 / (c + V);
+
 end

@@ -1,27 +1,38 @@
+% 先随机选出一个顾客？
+% input:
+% cusnum: customer number
+% to_remove: the number need to be removed
+% final_vehicles_customer: customer in every route
+% output:
+% removed: the customers been removed
+% rfvc: the customer remain
 function [removed, rfvc] = remove(cusnum, to_remove, D, dist, final_vehicles_customer)
-    inplan = 1 : cusnum;
-    visit = ceil(rand * cusnum);
-    inplan(inplan == visit) = [];
-    removed = [visit];
+    inplan = 1 : cusnum; % all customers
+    visit = ceil(rand * cusnum); % choose one customer randomly
+    inplan(inplan == visit) = []; % delete this customer
+    removed = [visit]; % record the removed customer
     
     while length(removed) < to_remove
-        nr = length(removed); % 当前被移出的顾客数量
-        vr = ceil(rand * nr); % 从被移出的顾客中随机选出一个
-        nip = length(inplan); % 原来顾客集合中顾客的数量
-        R = zeros(1, nip); % 存储相关性数组？
+        nr = length(removed); % customer already been removed
+        vr = ceil(rand * nr); % choose one removed customer 
+        nip = length(inplan); % the remaining customer
+        R = zeros(1, nip); % store Relatedness
         for i = 1 : nip
-            % 计算移出元素和所有其他剩余元素的相关性
+            % calculated Relatedness between a removed customer and all
+            % other customers
             R(i) = Relatedness(removed(vr), inplan(i), dist, final_vehicles_customer);
         end
         [SRV, SRI] = sort(R, 'descend');
-        lst = inplan(SRI);
-        vc = lst(ceil(rand^D*nip));
-        removed = [removed vc]; % 向removed中添加元素
-        inplan(inplan == vc) = []; % 移出
+        lst = inplan(SRI); % sort the remaining customer
+        vc = lst(ceil(rand^D*nip)); 
+        % choose one customer, if D == 1, choose randomly, if D->inf, choose the customer with highest relateness
+        removed = [removed vc]; 
+        inplan(inplan == vc) = []; % delete
     end
-    rfvc = final_vehicles_customer;
-    nre = length(removed); %最终被移出顾客的总数量
-    NV = size(final_vehicles_customer, 1);
+    rfvc = final_vehicles_customer; % final customer
+    nre = length(removed); %final customer been removed
+    NV = size(final_vehicles_customer, 1); % number of vehicle
+    % check
     for i = 1 : NV
         route = final_vehicles_customer{i};
         for j = 1 : nre
