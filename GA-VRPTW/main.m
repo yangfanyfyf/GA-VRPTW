@@ -1,4 +1,5 @@
-clear, clc, close all;
+%clear, clc, 
+close all;
 
 %% input data
 % test_date = importdata('test.xlsx');
@@ -13,7 +14,7 @@ vertexs = test_date(:, 2:3);
 customer_location = vertexs(2:end, :);
 customer_number = size(customer_location, 1);
 
-robot_number = 3; % number of vehicles
+robot_number = 5; % number of vehicles
 
 % dist matrix
 distance_pair = pdist(vertexs); % pairwise distance
@@ -22,7 +23,7 @@ distance_matrix = squareform(distance_pair);
 %% GA parameters 
 population = 100; 
 generation = 1;
-maximum_generation = 50; 
+maximum_generation = 200; 
 probability_crossover = 0.9; 
 probability_mutation = 0.05; 
 rate_gap = 0.9; 
@@ -44,19 +45,29 @@ ObjV = calObj(chroms,customer_number,time_window1,time_window2,depot_time_window
 pre_objective_value=min(ObjV);
 
 % Display the change of the objective function value
-figure;
-hold on;
-box on;
-xlim([0, maximum_generation]);
-title('Optimization Process');
-xlabel('Generation');
-ylabel('The Optimal Value');
+% figure;
+% hold on;
+% box on;
+% xlim([0, maximum_generation]);
+% title('Optimization Process');
+% xlabel('Generation');
+% ylabel('The Optimal Value');
+
+
+iter_time = [];
+last_dist = 0;
+stop_count = 0;
+
+
 %% the loop
 while generation <= maximum_generation
+    
+    tic;
+    
     % calculate the fitness value
     ObjV = calObj(chroms,customer_number,time_window1,time_window2,depot_time_window2,service_time,distance_matrix);
     % draw the line
-    line([generation - 1, generation], [pre_objective_value, min(ObjV)]); pause(0.0001);
+%     line([generation - 1, generation], [pre_objective_value, min(ObjV)]); pause(0.0001);
     pre_objective_value = min(ObjV);
     FitnV = Fitness(ObjV);
     % select
@@ -80,6 +91,20 @@ while generation <= maximum_generation
     disp(['Number of Robots: ', num2str(bestNV), ', Total Distance: ', num2str(bestTD), ', Number of violated Path: ', num2str(best_vionum), ', Number of Violated Customer: ', num2str(best_viocus)]);
     fprintf('\n');
     generation = generation + 1;
+    
+    iter_time(generation) = toc;
+    
+    if last_dist == bestTD
+        stop_count = stop_count + 1;
+        if stop_count > 30
+            break;
+        end
+    else
+        last_dist = bestTD;
+        stop_count = 0;
+    end
+    
+    
 end
 ObjV = calObj(chroms,customer_number,time_window1,time_window2,depot_time_window2,service_time,distance_matrix);
 [minObjV,minInd]=min(ObjV);
@@ -94,7 +119,7 @@ flag = Judge(bestVC, time_window1, time_window2, depot_time_window2, service_tim
 % check the missing element in the final result
 missing_element = judgeFullElement(bestVC, customer_number);
 
-drawMap(bestVC, vertexs);
+%drawMap(bestVC, vertexs);
 
 
 
